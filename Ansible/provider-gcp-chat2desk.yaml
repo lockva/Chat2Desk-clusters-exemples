@@ -1,0 +1,47 @@
+- name: "Playbook provisionamento gcp"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    service_account_email: *coletar
+    credentials_file: /home/pabloadr/credentials/gcp/credential.json
+    project_id: *coletar
+    machine_type: g1-small
+    image: centos-7-v20180104
+    zone: us-central1-c
+  
+  tasks:
+  - name: "Criação de instancia GCP" 
+    gce:
+      instance_names: "instancia-chat2desk"
+      zone: "{{ zone }}"
+      machine_type: "{{ machine_type }}"
+      state: present
+      tags:
+        - mongodb
+        - chat2desk-test
+      image: "{{ image }}"
+      disk_auto_delete: true
+      ip_forward: true
+      service_account_email: "{{ service_account_email }}"
+      credentials_file: "{{ credentials_file }}"
+      project_id: "{{ project_id }}"
+    register: gce
+
+  - name: "Criação de disco" 
+    gce_pd:
+      instance_name: "intancia-chat2desk"
+      delete_on_termination: yes
+      size_gb: 30
+      name: disk-1
+      mode: READ_WRITE
+      state: present
+      zone: "{{ zone }}"
+      service_account_email: "{{ service_account_email }}"
+      credentials_file: "{{ credentials_file }}"
+      project_id: "{{ project_id }}"
+
+  - name: "validar ssh"
+    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
+    with_items: "{{ gce.instance_data }}"

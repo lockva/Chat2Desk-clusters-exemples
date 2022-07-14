@@ -1,12 +1,12 @@
-- name: "Playbook provisionamento gcp"
+- name: "Playbook exemplo"
   hosts: localhost
   connection: local
   gather_facts: no
 
   vars:
-    service_account_email: *coletar
+    service_account_email: exemplo@chat2desk-cluster.iam.gserviceaccount.com 
     credentials_file: /home/pabloadr/credentials/gcp/credential.json
-    project_id: *coletar
+    project_id: chat2desk-cluster
     machine_type: g1-small
     image: centos-7-v20180104
     zone: us-central1-c
@@ -42,6 +42,3 @@
       credentials_file: "{{ credentials_file }}"
       project_id: "{{ project_id }}"
 
-  - name: "validar ssh"
-    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
-    with_items: "{{ gce.instance_data }}"

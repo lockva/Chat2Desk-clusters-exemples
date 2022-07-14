@@ -1,5 +1,6 @@
 provider "google" {
-  project = "chat2desk-devops-test"
+  project = "chat2desk-cluster"
+  credentials = "${file("credentials.json")}"
   region = "us-central1"
   zone = "us-central1-c"
 }
@@ -29,3 +30,4 @@ tags = [
   "dev-cluster-chat2desk"]
   
 }
+*/
